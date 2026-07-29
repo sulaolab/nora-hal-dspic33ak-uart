@@ -45,7 +45,7 @@ Hardware validation currently covers:
 * Active RX abort
 * Return to normal printf / RX echo operation after async self-test cleanup
 
-The same UART core was also integration-validated in the Perseus application
+The same UART core was also integration-validated in the upstream audio application
 through both the legacy UART initialization route and the CMSIS USART route.
 Application-level console RX remained functional while audio/TDM continued
 running with `TDM miss = 0`.
