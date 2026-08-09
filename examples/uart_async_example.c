@@ -10,10 +10,10 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "dspic33ak_uart.h"
-#include "dspic33ak_uart_rx_isr_ring.h"
+#include "nora_uart.h"
+#include "nora_uart_dspic33ak_rx_isr_ring.h"
 
-#define APP_UART_INST DSPIC33AK_UART_INST_1
+#define APP_UART_INST NORA_UART_INST_1
 
 static uint8_t s_uart_rx_ring[256u];
 static volatile uint32_t s_uart_events;
@@ -23,7 +23,7 @@ static const uint8_t s_tx_message[] =
 static uint8_t s_rx_buffer[4u];
 
 static void app_uart_callback(
-    dspic33ak_uart_instance_t inst,
+    nora_uart_instance_t inst,
     uint32_t events,
     void *user_data)
 {
@@ -36,7 +36,7 @@ static void app_uart_callback(
 
 void app_uart_init(void)
 {
-    dspic33ak_uart_config_t cfg;
+    nora_uart_config_t cfg;
 
     memset(&cfg, 0, sizeof(cfg));
 
@@ -47,12 +47,12 @@ void app_uart_init(void)
 
     cfg.data_bits   = 8u;
     cfg.stop_bits   = 1u;
-    cfg.parity      = DSPIC33AK_UART_PARITY_NONE;
+    cfg.parity      = NORA_UART_PARITY_NONE;
 
     cfg.enable_tx   = true;
     cfg.enable_rx   = true;
 
-    cfg.rx_mode             = DSPIC33AK_UART_RX_MODE_ISR_RING;
+    cfg.rx_mode             = NORA_UART_RX_MODE_ISR_RING;
     cfg.rx_ring_buffer      = s_uart_rx_ring;
     cfg.rx_ring_buffer_size = sizeof(s_uart_rx_ring);
 
@@ -61,11 +61,11 @@ void app_uart_init(void)
 
     /*
      * Board-level CLKGEN8 / PPS / GPIO setup must be completed before this call.
-     * dspic33ak_uart_init() clears callback state, so register the callback after
+     * nora_uart_init() clears callback state, so register the callback after
      * init succeeds.
      */
-    if (dspic33ak_uart_init(APP_UART_INST, &cfg) == DSPIC33AK_UART_OK) {
-        (void)dspic33ak_uart_set_callback(
+    if (nora_uart_init(APP_UART_INST, &cfg) == NORA_UART_OK) {
+        (void)nora_uart_set_callback(
             APP_UART_INST,
             app_uart_callback,
             NULL);
@@ -74,17 +74,17 @@ void app_uart_init(void)
 
 bool app_uart_async_tx_start(void)
 {
-    s_uart_events &= ~DSPIC33AK_UART_EVENT_SEND_COMPLETE;
+    s_uart_events &= ~NORA_UART_EVENT_SEND_COMPLETE;
 
-    return (dspic33ak_uart_tx_start(
+    return (nora_uart_tx_start(
                 APP_UART_INST,
                 s_tx_message,
-                sizeof(s_tx_message) - 1u) == DSPIC33AK_UART_OK);
+                sizeof(s_tx_message) - 1u) == NORA_UART_OK);
 }
 
 bool app_uart_async_tx_submitted(void)
 {
-    return ((s_uart_events & DSPIC33AK_UART_EVENT_SEND_COMPLETE) != 0u);
+    return ((s_uart_events & NORA_UART_EVENT_SEND_COMPLETE) != 0u);
 }
 
 bool app_uart_async_tx_line_idle(void)
@@ -94,23 +94,23 @@ bool app_uart_async_tx_line_idle(void)
      * tx_done() before returning to blocking output such as printf().
      */
     return app_uart_async_tx_submitted() &&
-           dspic33ak_uart_tx_done(APP_UART_INST);
+           nora_uart_tx_done(APP_UART_INST);
 }
 
 bool app_uart_async_rx_start_clean(void)
 {
-    s_uart_events &= ~DSPIC33AK_UART_EVENT_RX_COMPLETE;
+    s_uart_events &= ~NORA_UART_EVENT_RX_COMPLETE;
     memset(s_rx_buffer, 0, sizeof(s_rx_buffer));
 
-    return (dspic33ak_uart_rx_start_clean(
+    return (nora_uart_rx_start_clean(
                 APP_UART_INST,
                 s_rx_buffer,
-                sizeof(s_rx_buffer)) == DSPIC33AK_UART_OK);
+                sizeof(s_rx_buffer)) == NORA_UART_OK);
 }
 
 bool app_uart_async_rx_complete(void)
 {
-    return ((s_uart_events & DSPIC33AK_UART_EVENT_RX_COMPLETE) != 0u);
+    return ((s_uart_events & NORA_UART_EVENT_RX_COMPLETE) != 0u);
 }
 
 bool app_uart_async_rx_matches_rxok(void)
@@ -118,24 +118,24 @@ bool app_uart_async_rx_matches_rxok(void)
     static const uint8_t expected[] = { 'R', 'X', 'O', 'K' };
 
     return app_uart_async_rx_complete() &&
-           (dspic33ak_uart_rx_count_get(APP_UART_INST) == sizeof(expected)) &&
+           (nora_uart_rx_count_get(APP_UART_INST) == sizeof(expected)) &&
            (memcmp(s_rx_buffer, expected, sizeof(expected)) == 0);
 }
 
 void app_uart_async_abort_all(void)
 {
-    (void)dspic33ak_uart_tx_abort(APP_UART_INST);
-    (void)dspic33ak_uart_rx_abort(APP_UART_INST);
+    (void)nora_uart_tx_abort(APP_UART_INST);
+    (void)nora_uart_rx_abort(APP_UART_INST);
 }
 
 size_t app_uart_async_tx_count(void)
 {
-    return dspic33ak_uart_tx_count_get(APP_UART_INST);
+    return nora_uart_tx_count_get(APP_UART_INST);
 }
 
 size_t app_uart_async_rx_count(void)
 {
-    return dspic33ak_uart_rx_count_get(APP_UART_INST);
+    return nora_uart_rx_count_get(APP_UART_INST);
 }
 
 /*
@@ -146,10 +146,10 @@ size_t app_uart_async_rx_count(void)
  */
 void __attribute__((interrupt, context)) _U1RXInterrupt(void)
 {
-    dspic33ak_uart_rx_irq_handler(APP_UART_INST);
+    nora_uart_rx_irq_handler(APP_UART_INST);
 }
 
 void __attribute__((interrupt, context)) _U1TXInterrupt(void)
 {
-    dspic33ak_uart_tx_irq_handler(APP_UART_INST);
+    nora_uart_tx_irq_handler(APP_UART_INST);
 }
