@@ -1,5 +1,5 @@
 /*
- * Minimal async TX/RX integration example for dspic33ak-hal-uart.
+ * Minimal async TX/RX integration example for nora-hal-dspic33ak-uart.
  *
  * Board code must configure the UART clock source, PPS, GPIO direction, and
  * analog-disable settings before app_uart_init().
@@ -19,7 +19,7 @@ static uint8_t s_uart_rx_ring[256u];
 static volatile uint32_t s_uart_events;
 
 static const uint8_t s_tx_message[] =
-    "async TX through dspic33ak-hal-uart\r\n";
+    "async TX through nora-hal-dspic33ak-uart\r\n";
 static uint8_t s_rx_buffer[4u];
 
 static void app_uart_callback(

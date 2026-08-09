@@ -146,6 +146,39 @@ the raw `_UxRXIF` aliases. That advice is now inverted for the CPU interrupt bit
 peripheral registers still go through the descriptor, interrupt bits go through
 the accessors that write the aliases. The README has been corrected accordingly.
 
+## Comment corrections made here, ahead of upstream
+
+Everything above describes the state as published on 2026-08-08, when every file under
+`src/` was byte-identical to upstream. On **2026-08-09** a documentation review found a
+class of error that the identity proof above cannot see, and it was fixed here first
+rather than waiting for the next upstream refresh.
+
+* `src/README.md` — the title wrote the HAL family name as `Nora`, and the layering
+  bullet said `dsPIC33A` where it means the dsPIC33AK backend. The `dsPIC33A/h/` DFP
+  path in `nora_uart_dspic33ak_reg.h` was left alone; it is a literal directory name.
+
+No executable code changed. The edits are comments and Markdown; the compiled
+result is unchanged.
+
+### Why the proof in "Proof of identity" does not catch this
+
+Step 3 reverse-normalises the NORA names back to `dspic33ak_*` and diffs against the
+pre-rename blob, so whatever is left is not naming. Two error classes cancel out exactly
+in that diff and are therefore invisible to it:
+
+* **A document reference to a file that was renamed.** A prose mention of
+  `nora_<mod>_hw.{c,h}` reverse-normalises to `dspic33ak_<mod>_hw.{c,h}`, which is the
+  *correct* pre-rename name — the diff is empty, yet the file is now called
+  `nora_<mod>_dspic33ak_hw.{c,h}` and the reference is dead. The same cancellation hides
+  `Nora` vs `NORA` and `dsPIC33A` vs `dsPIC33AK`: both sides of the diff are naming, so
+  naming errors are exactly what it is blind to.
+* **A document that omits a file the refresh added.** An absent line produces no diff
+  line at all.
+
+Both are real here. Neither is detectable by reverse-normalisation; both are detectable
+by resolving every `nora_*.{c,h}` mentioned in prose against the actual contents of
+`src/`, which is now how they were found.
+
 ## Hardware evidence
 
 There is no build or test in this repository — it is sources only. The evidence is
