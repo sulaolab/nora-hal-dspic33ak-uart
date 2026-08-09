@@ -16,11 +16,9 @@ HAL family whose public API is namespaced `nora_*` / `NORA_*`.
 > project that runs these sources on hardware. Fixes flow *into* here from that
 > validated tree — see [docs/nora_migration.md](docs/nora_migration.md).
 >
-> **One exception, 2026-08-09.** Comments and the folder README under `src/` were
-> corrected *here first*, ahead of the upstream tree: stale file names left behind by
-> the rename, `Nora` where the family name is `NORA`, and `dsPIC33A` where the text
-> means the dsPIC33AK backend. **No executable code changed.** The same corrections are
-> queued for upstream; the files are listed in
+> **One exception, 2026-08-09.** Documentation and comment corrections under `src/`
+> were made here first, ahead of the audio-board upstream. **No executable code
+> changed.** The exact files and corrections are listed in
 > [docs/nora_migration.md](docs/nora_migration.md).
 
 This repository provides a reusable byte-stream UART driver with a clean public API. The public API avoids exposing XC-DSC / DFP bitfield types, while device-specific register mapping is isolated in small internal files.

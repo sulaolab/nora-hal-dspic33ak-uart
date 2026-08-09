@@ -175,9 +175,11 @@ in that diff and are therefore invisible to it:
 * **A document that omits a file the refresh added.** An absent line produces no diff
   line at all.
 
-Both are real here. Neither is detectable by reverse-normalisation; both are detectable
-by resolving every `nora_*.{c,h}` mentioned in prose against the actual contents of
-`src/`, which is now how they were found.
+Both blind spots were observed across the NORA-HAL migration fleet; the subset that
+affected *this* repository is the list above. Neither is detectable by
+reverse-normalisation. What does detect them is resolving every `nora_*.{c,h}`
+mentioned in prose against the actual contents of `src/`, and reading every
+`dsPIC33A` / `Nora` hit rather than counting them — which is how these were found.
 
 ## Hardware evidence
 
