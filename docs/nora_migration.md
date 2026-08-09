@@ -146,12 +146,20 @@ the raw `_UxRXIF` aliases. That advice is now inverted for the CPU interrupt bit
 peripheral registers still go through the descriptor, interrupt bits go through
 the accessors that write the aliases. The README has been corrected accordingly.
 
-## Comment corrections made here, ahead of upstream
+## Comment corrections made here ahead of upstream — since converged
 
 Everything above describes the state as published on 2026-08-08, when every file under
 `src/` was byte-identical to upstream. On **2026-08-09** a documentation review found a
 class of error that the identity proof above cannot see, and it was fixed here first
 rather than waiting for the next upstream refresh.
+
+**Converged later the same day, so this section is history and not an open delta.**
+The corrections below are now in the audio-board tree as well: `dsp-sonora`
+`fix/nora-naming-convergence` `1615e04` copied them back byte-for-byte, after
+checking that each file's pre-copy blob equalled its pre-fix blob, so the identity
+holds by construction rather than by inspection. That branch lands on `main`
+together with the rest of the migration, which is why the chain above still names
+the pre-convergence `main` commit.
 
 * `src/README.md` — the title wrote the HAL family name as `Nora`, and the layering
   bullet said `dsPIC33A` where it means the dsPIC33AK backend. The `dsPIC33A/h/` DFP
@@ -160,11 +168,18 @@ rather than waiting for the next upstream refresh.
 No executable code changed. The edits are comments and Markdown; the compiled
 result is unchanged.
 
+What is claimed, precisely, is `Sonora == Starter` for every shared HAL file. It is
+deliberately **not** stated as byte identity across the whole fleet:
+`dsp-sonora-dual-partition` carries intentionally divergent variants of some
+backends and is reconciled separately.
+
 ### Why the proof in "Proof of identity" does not catch this
 
 Step 3 reverse-normalises the NORA names back to `dspic33ak_*` and diffs against the
 pre-rename blob, so whatever is left is not naming. Two error classes cancel out exactly
-in that diff and are therefore invisible to it:
+in that diff and are therefore invisible to it. Two more slipped past the sweep that was
+supposed to back the diff up, for a different reason: the sweep's own shape -- which
+extensions it opened, which pattern it matched -- decided what it was able to see.
 
 * **A document reference to a file that was renamed.** A prose mention of
   `nora_<mod>_hw.{c,h}` reverse-normalises to `dspic33ak_<mod>_hw.{c,h}`, which is the
@@ -174,12 +189,21 @@ in that diff and are therefore invisible to it:
   naming errors are exactly what it is blind to.
 * **A document that omits a file the refresh added.** An absent line produces no diff
   line at all.
+* **A sweep whose file-extension filter is narrower than the tree.** A `.c`/`.h` sweep
+  cannot see a defect in a `.h_example` file. The file is present, the pattern matches
+  nothing, and the empty result reads as "clean".
+* **A grep shape that cannot express the name it is looking for.** `NORA_NVM_[A-Z][a-z]`
+  was used to find mixed-case function names and silently cannot match
+  `NORA_NVM_CRCPreflight`, because two capitals follow the prefix. The sweep returned a
+  strict subset of the real hits and looked complete.
 
-Both blind spots were observed across the NORA-HAL migration fleet; the subset that
-affected *this* repository is the list above. Neither is detectable by
+These blind spots were observed across the NORA-HAL migration fleet; the subset that
+affected *this* repository is the list above. None of them is detectable by
 reverse-normalisation. What does detect them is resolving every `nora_*.{c,h}`
-mentioned in prose against the actual contents of `src/`, and reading every
-`dsPIC33A` / `Nora` hit rather than counting them — which is how these were found.
+mentioned in prose against the actual contents of `src/`, reading every
+`dsPIC33A` / `Nora` hit rather than counting them, and — for the last two — letting
+the tree decide which extensions the sweep covers and searching for exact names
+rather than for a pattern that merely resembles them. That is how these were found.
 
 ## Hardware evidence
 
