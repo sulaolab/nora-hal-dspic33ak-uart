@@ -1,8 +1,9 @@
 # nora-hal-dspic33ak-uart
 
-Small, readable UART HAL for Microchip dsPIC33AK devices — part of **NORA-HAL**
-(Native On-chip Resource Assistant), a HAL family whose public API is namespaced
-`nora_*` / `NORA_*`.
+**NORA-HAL** — *Native On-chip Resource Assistant*
+
+Small, readable UART HAL for Microchip dsPIC33AK devices — part of **NORA-HAL**, a
+HAL family whose public API is namespaced `nora_*` / `NORA_*`.
 
 > Want to run it on hardware first?
 > Start with [dspic33ak-hal-starter](https://github.com/sulaolab/dspic33ak-hal-starter),
