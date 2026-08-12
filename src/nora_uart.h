@@ -169,6 +169,15 @@ typedef struct {
     uint32_t tx_collision_count;
     uint32_t rx_ring_overflow_count;
     uint32_t rx_max_drain_count;
+
+    /*
+     * Cross-silicon RX recovery diagnostics. The dsPIC33CK backend records
+     * these recovery paths; dsPIC33AK has no corresponding paths and reports
+     * zero for all three counters.
+     */
+    uint32_t rx_stall_recovery_count;
+    uint32_t rx_ie_lost_count;
+    uint32_t rx_overrun_recovered_count;
 } nora_uart_rx_status_t;
 
 /* ========================================================================== */
