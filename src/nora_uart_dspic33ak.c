@@ -13,13 +13,13 @@
 /* Module Variables                                                           */
 /* ========================================================================== */
 
-static uint32_t g_timeout_ms[NORA_UART_INST_COUNT];
-static nora_uart_get_ms_fn g_get_ms[NORA_UART_INST_COUNT];
-static bool g_initialized[NORA_UART_INST_COUNT];
+static uint32_t g_timeout_ms[NORA_UART_INST_SUPPORTED_COUNT];
+static nora_uart_get_ms_fn g_get_ms[NORA_UART_INST_SUPPORTED_COUNT];
+static bool g_initialized[NORA_UART_INST_SUPPORTED_COUNT];
 
 /* Per-instance RX backend (defaults to polling; set from config at init). The
  * RX query/read/flush API consults this to pick the FIFO or the ISR ring. */
-static nora_uart_rx_mode_t g_rx_mode[NORA_UART_INST_COUNT];
+static nora_uart_rx_mode_t g_rx_mode[NORA_UART_INST_SUPPORTED_COUNT];
 
 /* ---- Asynchronous transfer model state (per instance) -------------------- *
  * All of this is inert until nora_uart_tx_start(), nora_uart_rx_start(),
@@ -31,24 +31,24 @@ static nora_uart_rx_mode_t g_rx_mode[NORA_UART_INST_COUNT];
  * volatile. The buffer pointer and length are written once (before the busy
  * flag is set and the interrupt is enabled) and only read afterwards, so they
  * do not need to be volatile. */
-static nora_uart_event_callback_t g_callback[NORA_UART_INST_COUNT];
-static void *g_callback_user_data[NORA_UART_INST_COUNT];
+static nora_uart_event_callback_t g_callback[NORA_UART_INST_SUPPORTED_COUNT];
+static void *g_callback_user_data[NORA_UART_INST_SUPPORTED_COUNT];
 
-static uint32_t g_uart_clk_hz[NORA_UART_INST_COUNT];
-static uint32_t g_baudrate[NORA_UART_INST_COUNT];
-static bool     g_tx_enabled[NORA_UART_INST_COUNT];
-static bool     g_rx_enabled[NORA_UART_INST_COUNT];
-static uint8_t  g_tx_irq_priority[NORA_UART_INST_COUNT];
+static uint32_t g_uart_clk_hz[NORA_UART_INST_SUPPORTED_COUNT];
+static uint32_t g_baudrate[NORA_UART_INST_SUPPORTED_COUNT];
+static bool     g_tx_enabled[NORA_UART_INST_SUPPORTED_COUNT];
+static bool     g_rx_enabled[NORA_UART_INST_SUPPORTED_COUNT];
+static uint8_t  g_tx_irq_priority[NORA_UART_INST_SUPPORTED_COUNT];
 
-static const uint8_t   *g_tx_buf[NORA_UART_INST_COUNT];
-static size_t           g_tx_len[NORA_UART_INST_COUNT];
-static volatile size_t  g_tx_count[NORA_UART_INST_COUNT];
-static volatile bool    g_tx_busy[NORA_UART_INST_COUNT];
+static const uint8_t   *g_tx_buf[NORA_UART_INST_SUPPORTED_COUNT];
+static size_t           g_tx_len[NORA_UART_INST_SUPPORTED_COUNT];
+static volatile size_t  g_tx_count[NORA_UART_INST_SUPPORTED_COUNT];
+static volatile bool    g_tx_busy[NORA_UART_INST_SUPPORTED_COUNT];
 
-static uint8_t         *g_rx_buf[NORA_UART_INST_COUNT];
-static size_t           g_rx_len[NORA_UART_INST_COUNT];
-static volatile size_t  g_rx_count[NORA_UART_INST_COUNT];
-static volatile bool    g_rx_busy[NORA_UART_INST_COUNT];
+static uint8_t         *g_rx_buf[NORA_UART_INST_SUPPORTED_COUNT];
+static size_t           g_rx_len[NORA_UART_INST_SUPPORTED_COUNT];
+static volatile size_t  g_rx_count[NORA_UART_INST_SUPPORTED_COUNT];
+static volatile bool    g_rx_busy[NORA_UART_INST_SUPPORTED_COUNT];
 
 /* ========================================================================== */
 /* Local Function Prototypes                                                  */
@@ -987,7 +987,9 @@ void nora_uart_dspic33ak_async_notify_events(
 /* -------------------------------------------------------------------------- */
 static bool uart_inst_is_valid(nora_uart_instance_t inst)
 {
-    return ((unsigned)inst < (unsigned)NORA_UART_INST_COUNT);
+    /* Narrowed by NORA_UART_INST_SUPPORTED_COUNT: every array this file owns is
+     * that wide, and every access passes through here. */
+    return ((unsigned)inst < (unsigned)NORA_UART_INST_SUPPORTED_COUNT);
 }
 
 /* -------------------------------------------------------------------------- */

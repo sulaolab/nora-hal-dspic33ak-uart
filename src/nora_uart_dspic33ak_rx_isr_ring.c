@@ -40,12 +40,12 @@
  *   - g_rx_read_idx is advanced only by nora_uart_dspic33ak_rx_isr_read_byte().
  * The buffer itself is owned by the caller (passed in via config).
  */
-static uint8_t *g_rx_ring[NORA_UART_INST_COUNT];
-static uint16_t g_rx_ring_size[NORA_UART_INST_COUNT];
-static volatile uint16_t g_rx_read_idx[NORA_UART_INST_COUNT];
-static volatile uint16_t g_rx_write_idx[NORA_UART_INST_COUNT];
-static volatile nora_uart_dspic33ak_rx_isr_status_t g_rx_status[NORA_UART_INST_COUNT];
-static bool g_rx_isr_configured[NORA_UART_INST_COUNT];
+static uint8_t *g_rx_ring[NORA_UART_INST_SUPPORTED_COUNT];
+static uint16_t g_rx_ring_size[NORA_UART_INST_SUPPORTED_COUNT];
+static volatile uint16_t g_rx_read_idx[NORA_UART_INST_SUPPORTED_COUNT];
+static volatile uint16_t g_rx_write_idx[NORA_UART_INST_SUPPORTED_COUNT];
+static volatile nora_uart_dspic33ak_rx_isr_status_t g_rx_status[NORA_UART_INST_SUPPORTED_COUNT];
+static bool g_rx_isr_configured[NORA_UART_INST_SUPPORTED_COUNT];
 
 /* ========================================================================== */
 /* Local Function Prototypes                                                  */
@@ -373,7 +373,8 @@ void nora_uart_rx_irq_handler(nora_uart_instance_t inst)
 /* -------------------------------------------------------------------------- */
 static bool uart_inst_is_valid(nora_uart_instance_t inst)
 {
-    return ((unsigned)inst < (unsigned)NORA_UART_INST_COUNT);
+    /* Narrowed by NORA_UART_INST_SUPPORTED_COUNT -- see nora_uart.h. */
+    return ((unsigned)inst < (unsigned)NORA_UART_INST_SUPPORTED_COUNT);
 }
 
 /* -------------------------------------------------------------------------- */

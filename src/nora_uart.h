@@ -63,6 +63,52 @@ typedef enum {
     NORA_UART_INST_COUNT
 } nora_uart_instance_t;
 
+/* ========================================================================== */
+/* Per-instance state width (project-configurable)                            */
+/* ========================================================================== */
+
+/*
+ * NORA_UART_HW_INST_MAX is the enum above, as a preprocessor literal. It has to
+ * be a macro and not NORA_UART_INST_COUNT: an enumerator is invisible to #if,
+ * which evaluates the unknown identifier as 0, so a range check written against
+ * the enum silently compares against zero. The _Static_assert below is what
+ * keeps the two from drifting apart.
+ */
+#define NORA_UART_HW_INST_MAX   4
+
+/*
+ * Project-supplied compile-time config, optional. The HAL ships no conf.h, so a
+ * project that vendors hal_uart without one keeps the documented default below
+ * (state for every instance the enum has -- the behaviour this driver has always
+ * had) instead of failing to compile on a missing include.
+ *
+ * NORA_UART_INST_SUPPORTED_COUNT narrows only the SIZE of the driver's
+ * per-instance arrays. The enum, the API and every prototype are unchanged;
+ * instances at or above the count report themselves absent
+ * (nora_uart_is_present() == false) rather than being silently accepted, so the
+ * narrowing cannot turn into an out-of-range write. See
+ * board/uart/nora_uart_conf.h for this product's value and the reasoning.
+ */
+#if !defined( NORA_UART_INST_SUPPORTED_COUNT )
+#  if defined( __has_include )
+#    if __has_include( "nora_uart_conf.h" )
+#      include "nora_uart_conf.h"
+#    endif
+#  endif
+#endif
+
+#ifndef NORA_UART_INST_SUPPORTED_COUNT
+#define NORA_UART_INST_SUPPORTED_COUNT   NORA_UART_HW_INST_MAX
+#endif
+
+#if (NORA_UART_INST_SUPPORTED_COUNT < 1) || \
+    (NORA_UART_INST_SUPPORTED_COUNT > NORA_UART_HW_INST_MAX)
+#error "NORA_UART_INST_SUPPORTED_COUNT must be 1..NORA_UART_HW_INST_MAX."
+#endif
+
+_Static_assert( (int)NORA_UART_INST_COUNT == NORA_UART_HW_INST_MAX,
+                "NORA_UART_HW_INST_MAX must match nora_uart_instance_t" );
+
 typedef enum {
     NORA_UART_OK = 0,
     NORA_UART_ERR_INVALID_ARG,

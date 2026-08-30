@@ -132,7 +132,12 @@ static const nora_uart_dspic33ak_device_t g_uart_devices[NORA_UART_INST_COUNT] =
 const nora_uart_dspic33ak_device_t *nora_uart_dspic33ak_get_device(
     nora_uart_instance_t inst)
 {
-    if ((unsigned)inst >= (unsigned)NORA_UART_INST_COUNT) {
+    /* NORA_UART_INST_SUPPORTED_COUNT, not the enum count: an instance the
+     * project narrowed away has no per-instance state, so it must report
+     * absent here -- that is what makes nora_uart_is_present() honest and
+     * keeps init failing with NOT_PRESENT instead of writing out of range.
+     * The register table itself stays full-width (it is const, in flash). */
+    if ((unsigned)inst >= (unsigned)NORA_UART_INST_SUPPORTED_COUNT) {
         return 0;
     }
 
