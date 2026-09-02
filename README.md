@@ -7,21 +7,8 @@ HAL family whose public API is namespaced `nora_*` / `NORA_*`.
 
 > Want to run it on hardware first?
 > Start with [dspic33ak-hal-starter](https://github.com/sulaolab/dspic33ak-hal-starter),
-> which vendors validated snapshots of the NORA-HAL repositories and
-> provides a ready-to-build MPLAB X project for the dsPIC33AK Curiosity board.
-
-> **This repository is a published snapshot, not the development tree.** Every
-> file under `src/` is byte-identical to its counterpart in
-> `dspic33ak-hal-starter`, which is in turn byte-identical to the audio-board
-> project that runs these sources on hardware. Fixes flow *into* here from that
-> validated tree — see [docs/nora_migration.md](docs/nora_migration.md).
->
-> **One exception, 2026-08-09 — since converged.** Documentation and comment
-> corrections under `src/` were made here first, ahead of the audio-board upstream.
-> **No executable code changed.** They have since been merged into that upstream
-> tree, so nothing here is ahead of it any more and the direction above holds
-> without exception. The files, the corrections, and the upstream commit are listed
-> in [docs/nora_migration.md](docs/nora_migration.md).
+> which provides a ready-to-build hardware integration for the dsPIC33AK
+> Curiosity board.
 
 This repository provides a reusable byte-stream UART driver with a clean public API. The public API avoids exposing XC-DSC / DFP bitfield types, while device-specific register mapping is isolated in small internal files.
 
