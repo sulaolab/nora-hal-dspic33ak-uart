@@ -73,7 +73,8 @@ Hardware validation currently covers:
 * Active RX abort
 * Return to normal printf / RX echo operation after async self-test cleanup
 
-The same UART core was also integration-validated in the upstream audio application
+The same UART core was also integration-validated in
+[dspic33ak-audio-dsp-sonora](https://github.com/sulaolab/dspic33ak-audio-dsp-sonora)
 through both the legacy UART initialization route and the CMSIS USART route.
 Application-level console RX remained functional while audio/TDM continued
 running with `TDM miss = 0`.
